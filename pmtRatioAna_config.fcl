@@ -1,0 +1,18 @@
+BEGIN_PROLOG
+pmtRatioAna:
+{
+  module_type:  "PMTRatioAna"
+
+  MCTruthLabel: "generator"
+  SimEnergyDepositLabel: "ionandscint"
+  SimEnergyDepositInstanceLabel: "priorSCE"
+  SimPhotonsModuleLabel: ["pdfastsim", "pdfastsimout"]
+  OpFlashesModuleLabel: ["opflashtpc0", "opflashtpc1"]
+
+
+  SaveTruth: true
+  SaveSimED: false
+  ApplyFiducialCut: true
+
+}
+END_PROLOG

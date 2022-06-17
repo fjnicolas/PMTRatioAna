@@ -1,0 +1,74 @@
+<?xml version="1.0"?>
+
+<!-- Production Project -->
+
+<!DOCTYPE project [
+<!ENTITY release "v09_53_01">
+<!ENTITY qualifiers "e20:prof">
+<!ENTITY file_type "mc">
+<!ENTITY run_type "physics">
+<!ENTITY name "PMTRatioCal">
+<!ENTITY tag "PMTRatioCal">
+<!ENTITY pnfs "/pnfs/sbnd/persistent/users/fnicolas">
+<!ENTITY app "/sbnd/data/users/fnicolas/PMTRatioCal/fcl/">
+]>
+
+<project name="&name;">
+
+  <!-- Group -->
+  <group>sbnd</group>
+
+  <!-- Project size -->
+  <numevents>5000</numevents>
+
+  <!-- Operating System -->
+  <os>SL7</os>
+
+  <!-- Batch resources -->
+  <resource>DEDICATED,OPPORTUNISTIC</resource>
+
+  <!-- Larsoft information -->
+  <larsoft>
+    <tag>&release;</tag>
+    <qual>&qualifiers;</qual>
+    <!--local>/pnfs/sbnd/resilient/users/fnicolas/v09_43_00/sbndcode_v09_43_00_risetime.tar</local-->
+  </larsoft>
+
+  <!-- Project stages -->
+  <stage name="geng4">
+    <fcl>&app;/gensingle_mu_pmtratiocalibration.fcl</fcl>
+    <fcl>&app;/g4_sce_saveSimEnergy.fcl</fcl>
+    <outdir>&pnfs;/&release;/&name;/geng4</outdir>
+    <workdir>&pnfs;/&release;/work/&name;/geng4</workdir>
+    <numjobs>100</numjobs>
+    <datatier>generated</datatier>
+    <defname>&name;_&tag;_geng4</defname>
+    <memory> 3000 </memory>
+    <disk> 1GB </disk>
+    <maxfilesperjob>1</maxfilesperjob>
+    <maxfluxfilemb>0</maxfluxfilemb>
+    <jobsub>-l '+SingularityImage="/cvmfs/singularity.opensciencegrid.org/fermilab/fnal-wn-sl7:latest"'  --append_condor_requirements='(TARGET.HAS_SINGULARITY=?=true)' --expected-lifetime=20m</jobsub>
+  </stage>
+
+ <stage name="detsimreco">
+    <fcl>detsim_sce.fcl</fcl>
+    <fcl>reco1_sce.fcl</fcl>
+    <outdir>&pnfs;/&release;/&name;/detsimreco</outdir>
+    <workdir>&pnfs;/&release;/work/&name;/detsimreco</workdir>
+    <numjobs>98</numjobs>
+    <datatier>generated</datatier>
+    <defname>&name;_&tag;_detsimreco</defname>
+    <memory> 3000 </memory>
+    <disk> 2GB </disk>
+    <maxfilesperjob>1</maxfilesperjob>
+    <maxfluxfilemb>0</maxfluxfilemb>
+    <jobsub>-l '+SingularityImage="/cvmfs/singularity.opensciencegrid.org/fermilab/fnal-wn-sl7:latest"'  --append_condor_requirements='(TARGET.HAS_SINGULARITY=?=true)' --expected-lifetime=1h</jobsub>
+ </stage>
+
+  <!-- file type -->
+  <filetype>&file_type;</filetype>
+
+  <!-- run type -->
+  <runtype>&run_type;</runtype>
+
+</project>
