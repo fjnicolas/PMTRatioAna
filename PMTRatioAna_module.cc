@@ -155,6 +155,7 @@ private:
 
   double fTotalEnergyDep;
   double fdEPromX, fdEPromY, fdEPromZ;
+  double fdESpreadX, fdESpreadY, fdESpreadZ;
   double fdETPCBalance;
 
   /*std::vector<double> fdEtpc, fdEpromx, fdEpromy, fdEpromz;
@@ -347,6 +348,7 @@ void pmtratio::PMTRatioAna::resetVars()
   fPMTRatioPE=-1;
 
   fdEPromX=fdEPromY=fdEPromZ=0;
+  fdESpreadX=fdESpreadY=fdESpreadZ=0;
   fTotalEnergyDep=0;
 
 }
@@ -390,9 +392,13 @@ void pmtratio::PMTRatioAna::beginJob()
   fTree->Branch("PMTRatioPE", &fPMTRatioPE);
 
   fTree->Branch("TotalEnergyDep", &fTotalEnergyDep);
+  fTree->Branch("dETPCBalance", &fdETPCBalance);
   fTree->Branch("dEPromX", &fdEPromX);
   fTree->Branch("dEPromY", &fdEPromY);
   fTree->Branch("dEPromZ", &fdEPromZ);
+  fTree->Branch("dESpreadX", &fdESpreadX);
+  fTree->Branch("dESpreadY", &fdESpreadY);
+  fTree->Branch("dESpreadZ", &fdESpreadZ);
 
   fNAnalyzedEvents=0;
 }
@@ -411,6 +417,7 @@ void pmtratio::PMTRatioAna::FillEnergyDepositions(std::vector<art::Ptr< sim::Sim
   std::unordered_map<std::string, double> EnergyDepX;
   std::unordered_map<std::string, double> EnergyDepY;
   std::unordered_map<std::string, double> EnergyDepZ;
+  double EnergyDepSpX=0, EnergyDepSpY=0, EnergyDepSpZ=0;
   EnergyDep["C0_TPC0"]=0; EnergyDep["C0_TPC1"]=0;
   EnergyDepX["C0_TPC0"]=0; EnergyDepX["C0_TPC1"]=0;
   EnergyDepY["C0_TPC0"]=0; EnergyDepY["C0_TPC1"]=0;
@@ -423,6 +430,9 @@ void pmtratio::PMTRatioAna::FillEnergyDepositions(std::vector<art::Ptr< sim::Sim
     EnergyDepX[tpclabel]+=pos[0]*ed->Energy();
     EnergyDepY[tpclabel]+=pos[1]*ed->Energy();
     EnergyDepZ[tpclabel]+=pos[2]*ed->Energy();
+    EnergyDepSpX+=pos[0]*pos[0]*ed->Energy();
+    EnergyDepSpY+=pos[1]*pos[1]*ed->Energy();
+    EnergyDepSpZ+=pos[2]*pos[2]*ed->Energy();
   }
 
 
@@ -443,6 +453,10 @@ void pmtratio::PMTRatioAna::FillEnergyDepositions(std::vector<art::Ptr< sim::Sim
   fdEPromY/=fTotalEnergyDep;
   fdEPromZ/=fTotalEnergyDep;
   fdETPCBalance=std::abs(EnergyDep["C0_TPC0"]-EnergyDep["C0_TPC1"])/fTotalEnergyDep;
+
+  fdESpreadX = std::sqrt(EnergyDepSpX/fTotalEnergyDep-fdEPromX*fdEPromX);
+  fdESpreadY = std::sqrt(EnergyDepSpY/fTotalEnergyDep-fdEPromY*fdEPromY);
+  fdESpreadZ = std::sqrt(EnergyDepSpZ/fTotalEnergyDep-fdEPromZ*fdEPromZ);
 }
 
 DEFINE_ART_MODULE(pmtratio::PMTRatioAna)
