@@ -118,6 +118,11 @@ private:
   bool fSaveSimED;
   bool fApplyFiducialCut;
 
+  double fPMTCoatedVUVEff;
+  double fPMTCoatedVISEff;
+  double fPMTUncoatedEff;
+  double fScintPreScale;
+
   TTree* fTree;
   int fEventID, fRunID, fSubRunID;
 
@@ -178,14 +183,20 @@ pmtratio::PMTRatioAna::PMTRatioAna(fhicl::ParameterSet const& p)
   fOpFlashesModuleLabel ( p.get<std::vector<std::string>>("OpFlashesModuleLabel",   {"opflashtpc0", "opflashtpc1"}) ),
   fSaveTruth( p.get<bool>("SaveTruth", "true") ),
   fSaveSimED( p.get<bool>("SaveSimED", "true") ),
-  fApplyFiducialCut( p.get<bool>("ApplyFiducialCut", "true") )
+  fApplyFiducialCut( p.get<bool>("ApplyFiducialCut", "true") ),
+  fPMTCoatedVUVEff( p.get<double>("PMTCoatedVUVEff") ),
+  fPMTCoatedVISEff( p.get<double>("PMTCoatedVISEff") ),
+  fPMTUncoatedEff( p.get<double>("PMTUncoatedEff") ),
+  fScintPreScale( p.get<double>("ScintPreScale") )
+
   // More initializers here.
 {
   auto const detProp = art::ServiceHandle<detinfo::DetectorPropertiesService const>()->DataForJob();
   //auto const clockData = art::ServiceHandle<detinfo::DetectorClocksService const>()->DataForJob();
 
-
-
+  fPMTUncoatedEff = fPMTUncoatedEff/fScintPreScale;
+  fPMTCoatedVUVEff = fPMTCoatedVUVEff/fScintPreScale;
+  fPMTCoatedVISEff = fPMTCoatedVISEff/fScintPreScale;
 }
 
 
@@ -273,8 +284,13 @@ void pmtratio::PMTRatioAna::analyze(art::Event const& e)
       std::map<int, int> fLitePhotons_map = fLitePhotons.DetectedPhotons;
 
       for(auto& fphoton : fLitePhotons_map){
-        if(pd_type=="pmt_coated") fSimPhotonsCoated+=fphoton.second;
-        else if(pd_type=="pmt_uncoated") fSimPhotonsUncoated+=fphoton.second;
+        if(pd_type=="pmt_coated") {
+          if(reflected)
+            fSimPhotonsCoated+=fPMTCoatedVISEff*fphoton.second;
+          else
+            fSimPhotonsCoated+=fPMTCoatedVUVEff*fphoton.second;
+        }
+        else if(pd_type=="pmt_uncoated") fSimPhotonsUncoated+=fPMTUncoatedEff*fphoton.second;
       }
     }
   }

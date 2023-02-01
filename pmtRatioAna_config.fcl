@@ -14,5 +14,9 @@ pmtRatioAna:
   SaveSimED: false
   ApplyFiducialCut: true
 
+  PMTCoatedVUVEff:       0.12      #PMT coated detection efficiency for direct (VUV) light
+  PMTCoatedVISEff:       0.13      #PMT coated detection efficiency for reflected (VIS) light
+  PMTUncoatedEff:        0.19      #PMT uncoated detection efficiency
+  ScintPreScale:         0.19
 }
 END_PROLOG
