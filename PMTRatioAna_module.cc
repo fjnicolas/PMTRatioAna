@@ -16,7 +16,6 @@
 #include "art_root_io/TFileService.h"
 #include "art_root_io/TFileDirectory.h"
 
-
 #include "fhiclcpp/ParameterSet.h"
 
 #include "messagefacility/MessageLogger/MessageLogger.h"
@@ -40,9 +39,10 @@
 #include "lardataobj/Simulation/SimEnergyDeposit.h"
 #include "lardataobj/Simulation/SimPhotons.h"
 #include "lardataobj/RecoBase/OpFlash.h"
+#include "TVector3.h"
 
-#include "larsim/MCCheater/ParticleInventory.h"
-#include "larsim/MCCheater/ParticleInventoryService.h"
+//#include "larsim/MCCheater/ParticleInventory.h"
+//#include "larsim/MCCheater/ParticleInventoryService.h"
 
 
 #include "canvas/Utilities/InputTag.h"
@@ -424,15 +424,16 @@ void pmtratio::PMTRatioAna::FillEnergyDepositions(std::vector<art::Ptr< sim::Sim
   EnergyDepZ["C0_TPC0"]=0; EnergyDepZ["C0_TPC1"]=0;
 
   for(auto & ed:SimED){
-    double const pos[]={ed->MidPointX(),ed->MidPointY(),ed->MidPointZ()};
+    //double const pos[]={ed->MidPointX(),ed->MidPointY(),ed->MidPointZ()};
+    geo::Point_t const pos{ed->MidPointX(),ed->MidPointY(),ed->MidPointZ()};
     std::string tpclabel=GetTPCLabel(fGeom->FindTPCAtPosition(pos).Cryostat, fGeom->FindTPCAtPosition(pos).TPC);
     EnergyDep[tpclabel]+=ed->Energy();
-    EnergyDepX[tpclabel]+=pos[0]*ed->Energy();
-    EnergyDepY[tpclabel]+=pos[1]*ed->Energy();
-    EnergyDepZ[tpclabel]+=pos[2]*ed->Energy();
-    EnergyDepSpX+=pos[0]*pos[0]*ed->Energy();
-    EnergyDepSpY+=pos[1]*pos[1]*ed->Energy();
-    EnergyDepSpZ+=pos[2]*pos[2]*ed->Energy();
+    EnergyDepX[tpclabel]+=pos.X()*ed->Energy();
+    EnergyDepY[tpclabel]+=pos.Y()*ed->Energy();
+    EnergyDepZ[tpclabel]+=pos.Z()*ed->Energy();
+    EnergyDepSpX+=pos.X()*pos.X()*ed->Energy();
+    EnergyDepSpY+=pos.Y()*pos.Y()*ed->Energy();
+    EnergyDepSpZ+=pos.Z()*pos.Z()*ed->Energy();
   }
 
 

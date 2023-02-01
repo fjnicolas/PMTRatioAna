@@ -1,39 +1,46 @@
-art_make(
-MODULE_LIBRARIES
-  ${ART_FRAMEWORK_CORE}
-  ${ART_FRAMEWORK_PRINCIPAL}
-  ${ART_FRAMEWORK_SERVICES_REGISTRY}
-  ${ART_FRAMEWORK_SERVICES_OPTIONAL}
-  ${ART_ROOT_IO_TFILE_SUPPORT}
-  ${ART_ROOT_IO_TFILESERVICE_SERVICE}
-  art_Persistency_Common canvas
-  art_Persistency_Provenance canvas
-  art_Utilities canvas
-  nusimdata_SimulationBase
-  cetlib cetlib_except
-  larsim_MCCheater_ParticleInventoryService_service
-  ${MF_MESSAGELOGGER}
-  ${FHICLCPP}
-  ${ROOT_BASIC_LIB_LIST}
+set(      MODULE_LIBRARIES
+    ${ART_FRAMEWORK_CORE}
+    ${ART_FRAMEWORK_PRINCIPAL}
+    ${ART_FRAMEWORK_SERVICES_REGISTRY}
+    ${ART_FRAMEWORK_SERVICES_OPTIONAL}
+    ${ART_ROOT_IO_TFILE_SUPPORT}
+    ${ART_ROOT_IO_TFILESERVICE_SERVICE}
+    art::Persistency_Common
+    art::Persistency_Provenance
+    art::Utilities
+    nusimdata::SimulationBase
+    larsim::MCCheater_ParticleInventoryService_service
+    ${MF_MESSAGELOGGER}
+    ${FHICLCPP}
+    ${ROOT_BASIC_LIB_LIST}
 
-  larcore_Geometry_Geometry_service
-  larcorealg_Geometry
-  lardataobj_RawData
-  lardataobj_RecoBase
-  lardataobj_MCBase
-  lardataobj_Simulation
-  nusimdata_SimulationBase
-  nug4_ParticleNavigation
+    art_root_io::tfile_support
+    art_root_io::TFileService_service
 
-  sbndcode_OpDetSim
-  sbndcode_OpDetReco_OpFlash_FlashFinder
+    ROOT::Tree
+    ROOT::Core
 
-  larsim_Utils
-  larsim_MCCheater_BackTrackerService_service
-  larsim_MCCheater_PhotonBackTrackerService_service
+    larcore::Geometry_Geometry_service
+    larcorealg::Geometry
+    lardataobj::RawData
+    lardataobj::RecoBase
+    lardataobj::MCBase
+    lardataobj::Simulation
+    nusimdata::SimulationBase
+    nug4::ParticleNavigation
+
+    sbndcode::OpDetSim
+
+    larsim::Utils
+    larsim::MCCheater_BackTrackerService_service
+    larsim::MCCheater_PhotonBackTrackerService_service
 )
+
+
+cet_build_plugin(PMTRatioAna art::Module SOURCE PMTRatioAna_module.cc LIBRARIES ${MODULE_LIBRARIES} )
+
+add_subdirectory(fcl)
+
 install_fhicl()
 install_source()
 FILE(GLOB fcl_files *.fcl)
-
-add_subdirectory(fcl)
